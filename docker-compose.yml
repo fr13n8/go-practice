@@ -1,0 +1,59 @@
+version: '3.1'
+services:
+  # kibana:
+  #   build:
+  #     context: kibana/
+  #   container_name: kibana
+  #   volumes:
+  #     - ./kibana/config/:/usr/share/kibana/config:ro
+  #   networks: ['elastic']
+  #   depends_on:
+  #     - elasticsearch
+  #   restart: always
+  #   mem_limit: 1g
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.3.3
+    # build:
+      # context: elasticsearch/
+    container_name: elasticsearch
+    networks: ['elastic']
+    # volumes:
+      # - ./elasticsearch/elastic-data:/usr/share/elasticsearch/data
+      # - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      # - ./elasticsearch/logs:/var/logs/elasticsearch:ro
+    restart: always
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    environment:
+      - cluster.name=es-docker
+      - node.name=node1
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+      - http.host=0.0.0.0
+      - transport.host=127.0.0.1
+    mem_limit: 1g
+    tty: true
+
+  # logstash:
+  #     build:
+  #       context: logstash/
+  #     container_name: logstash
+  #     volumes:
+  #       - ./logstash/pipeline/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
+  #     networks: ['elastic']
+  #     ports:
+  #       - "5044:5044"
+  #     depends_on:
+  #       - elasticsearch
+  #     restart: always
+  #     mem_limit: 1g
+  #     environment:
+  #       - "LS_JAVA_OPTS=-Xmx1g -Xms1g"
+
+networks: {elastic: {}}
