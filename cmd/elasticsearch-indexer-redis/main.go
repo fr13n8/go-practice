@@ -5,7 +5,6 @@ import (
 	"encoding/gob"
 	"log"
 
-	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/fr13n8/go-practice/internal/domain"
 	"github.com/fr13n8/go-practice/pkg/redis"
 )
@@ -15,17 +14,17 @@ func main() {
 }
 
 func run() {
-	es, err := elasticsearch.NewDefaultClient()
-	if err != nil {
-		log.Fatalf("Error creating the client: %s", err)
-	}
-	log.Println(elasticsearch.Version)
-	res, err := es.Info()
-	if err != nil {
-		log.Fatalf("Error getting response: %s", err)
-	}
-	defer res.Body.Close()
-	log.Println(res)
+	// es, err := elasticsearch.NewDefaultClient()
+	// if err != nil {
+	// 	log.Fatalf("Error creating the client: %s", err)
+	// }
+	// log.Println(elasticsearch.Version)
+	// res, err := es.Info()
+	// if err != nil {
+	// 	log.Fatalf("Error getting response: %s", err)
+	// }
+	// defer res.Body.Close()
+	// log.Println(res)
 	rdb, err := redis.NewRedis()
 	if err != nil {
 		panic(err)

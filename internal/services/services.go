@@ -15,7 +15,7 @@ type Task interface {
 }
 
 type Services struct {
-	Task
+	Task Task
 }
 
 func NewServices(repos *repository.Repository) *Services {

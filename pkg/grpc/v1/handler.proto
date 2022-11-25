@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+option go_package = "github.com/fr13n8/go-practice/internal/delivery/grpc/v1";
+
+package v1;
+
+service TaskService {
+    rpc CreateTask (CreateTaskRequest) returns (CreateTaskResponse) {}
+    rpc UpdateTask (UpdateTaskRequest) returns (UpdateTaskResponse) {}
+    rpc DeleteTask (DeleteTaskRequest) returns (DeleteTaskResponse) {}
+    rpc GetTask (GetTaskRequest) returns (GetTaskResponse) {}
+    rpc ListTasks (ListTasksRequest) returns (ListTasksResponse) {}
+}
+
+message CreateTaskRequest {
+    string name = 1;
+}
+
+message CreateTaskResponse {
+    string id = 1;
+    string name = 2;
+    bool status = 3;
+}
+
+message UpdateTaskRequest {
+    string id = 1;
+    string name = 2;
+}
+
+message UpdateTaskResponse {
+    string id = 1;
+    string name = 2;
+    bool status = 3;
+}
+
+message DeleteTaskRequest {
+    string id = 1;
+}
+
+message DeleteTaskResponse {
+    string id = 1;
+}
+
+message GetTaskRequest {
+    string id = 1;
+}
+
+message GetTaskResponse {
+    string id = 1;
+    string name = 2;
+    bool status = 3;
+}
+
+message ListTasksRequest {
+    int64 limit = 1;
+    int64 offset = 2;
+}
+
+message ListTasksResponse {
+    repeated Task tasks = 1;
+}
+
+message Task {
+    string id = 1;
+    string name = 2;
+    bool status = 3;
+}

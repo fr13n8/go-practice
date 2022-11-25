@@ -4,6 +4,7 @@ import "time"
 
 type Config struct {
 	HTTP          HttpConfig
+	GRPC          GrpcConfig
 	ElasticConfig ElasticConfig
 	Database      string
 }
@@ -17,6 +18,12 @@ type HttpConfig struct {
 	MaxRequestBodySize int
 }
 
+type GrpcConfig struct {
+	ServerName string
+	Host       string
+	Port       string
+}
+
 func NewConfig() *Config {
 	return &Config{
 		HTTP: HttpConfig{
@@ -26,6 +33,11 @@ func NewConfig() *Config {
 			ReadTimeout:        time.Second * 5,
 			WriteTimeout:       time.Second * 5,
 			MaxRequestBodySize: 1048576,
+		},
+		GRPC: GrpcConfig{
+			ServerName: "My Server",
+			Host:       "",
+			Port:       "3001",
 		},
 		ElasticConfig: ElasticConfig{
 			Host:     "localhost",
