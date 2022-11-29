@@ -29,7 +29,7 @@ func NewConfig() *Config {
 		HTTP: HttpConfig{
 			ServerName:         "My Server",
 			Host:               "",
-			Port:               "3000",
+			Port:               "80",
 			ReadTimeout:        time.Second * 5,
 			WriteTimeout:       time.Second * 5,
 			MaxRequestBodySize: 1048576,
@@ -37,7 +37,7 @@ func NewConfig() *Config {
 		GRPC: GrpcConfig{
 			ServerName: "My Server",
 			Host:       "",
-			Port:       "3001",
+			Port:       "3002",
 		},
 		ElasticConfig: ElasticConfig{
 			Host:     "localhost",

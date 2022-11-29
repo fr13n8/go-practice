@@ -1,7 +1,12 @@
 package grpc
 
 import (
+	"fmt"
+	"log"
 	"net"
+	"os"
+	"os/signal"
+	"syscall"
 
 	pb "github.com/fr13n8/go-practice/pkg/grpc/v1"
 
@@ -27,18 +32,28 @@ func NewServer(cfg *config.GrpcConfig) *Server {
 	}
 }
 
-func (s *Server) Run(initHandlers func(app *grpc.Server)) error {
+func (s *Server) Run(initHandlers func(app *grpc.Server)) <-chan os.Signal {
 	addr := s.host + ":" + s.port
 	listener, err := net.Listen("tcp", addr)
 	if err != nil {
-		return err
+		log.Fatalf("failed to listen: %v", err)
 	}
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
 
 	initHandlers(s.srv)
 
-	return s.srv.Serve(listener)
+	go func() {
+		if err := s.srv.Serve(listener); err != nil {
+			log.Fatalf("failed to serve: %v", err)
+		}
+	}()
+
+	return quit
 }
 
-func (s *Server) Stop() {
+func (s *Server) ShutdownGracefully() {
 	s.srv.GracefulStop()
+	fmt.Println("gRPC Server Shutdown Successful")
 }

@@ -1,7 +1,13 @@
 package http
 
 import (
+	"context"
 	"fmt"
+	"log"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/fr13n8/go-practice/internal/config"
 	"github.com/gofiber/fiber/v2"
@@ -27,11 +33,40 @@ func NewServer(cfg *config.HttpConfig) *Server {
 	}
 }
 
-func (s *Server) Run(initHandlers func(app *fiber.App)) error {
+func (s *Server) Run(initHandlers func(app *fiber.App)) <-chan os.Signal {
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
+
 	initHandlers(s.http)
-	return s.http.Listen(fmt.Sprintf("%s:%s", s.host, s.port))
+
+	go func() {
+		if err := s.http.Listen(fmt.Sprintf("%s:%s", s.host, s.port)); err != nil {
+			log.Fatalf("Error while running server: %s", err.Error())
+		}
+	}()
+
+	return quit
 }
 
-func (s *Server) Shutdown() error {
-	return s.http.Shutdown()
+func (s *Server) ShutdownGracefully() {
+	timeout, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+
+	defer func() {
+		// Release resources like Database connections
+		cancel()
+	}()
+
+	shutdownChan := make(chan error, 1)
+	go func() { shutdownChan <- s.http.Shutdown() }()
+
+	select {
+	case <-timeout.Done():
+		log.Fatal("Server Shutdown Timed out before shutdown.")
+	case err := <-shutdownChan:
+		if err != nil {
+			log.Fatal("Error while shutting down server", err)
+		} else {
+			fmt.Println("Server Shutdown Successful")
+		}
+	}
 }

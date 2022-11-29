@@ -3,11 +3,10 @@ package app
 import (
 	"fmt"
 	"os"
-	"os/signal"
-	"syscall"
 
 	httpServer "github.com/fr13n8/go-practice/internal/delivary/http"
 	httpHandler "github.com/fr13n8/go-practice/internal/delivary/http/handler"
+	"github.com/fr13n8/go-practice/internal/delivary/http/middlewares"
 
 	grpcServer "github.com/fr13n8/go-practice/internal/delivary/grpc"
 	grpcHandler "github.com/fr13n8/go-practice/internal/delivary/grpc/handler"
@@ -34,21 +33,12 @@ func RunHttp() {
 	handlers := httpHandler.NewHandler(appServices)
 	srv := httpServer.NewServer(&cfg.HTTP)
 
-	go func() {
-		if err := srv.Run(handlers.Init); err != nil {
-			fmt.Printf("error occurred while running http server: %s\n", err.Error())
-		}
-	}()
-
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
+	middlewares.RegisterPromethesMetrics()
+	quit := srv.Run(handlers.Init)
 	<-quit
 
-	if err := srv.Shutdown(); err != nil {
-		fmt.Printf("error occurred while shutting down http server: %s\n", err.Error())
-	}
-
-	fmt.Println("Server stopped")
+	fmt.Println("Shutting down http server...")
+	srv.ShutdownGracefully()
 }
 
 func RunGrpc() {
@@ -64,17 +54,10 @@ func RunGrpc() {
 	appServices := services.NewServices(repo)
 	handlers := grpcHandler.NewHandler(appServices)
 	srv := grpcServer.NewServer(&cfg.GRPC)
-	go func() {
-		if err := srv.Run(handlers.Init); err != nil {
-			fmt.Printf("error occurred while running grpc server: %s\n", err.Error())
-		}
-	}()
-	fmt.Printf("gRPC server is running on port %s", cfg.GRPC.Port)
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
+
+	quit := srv.Run(handlers.Init)
 	<-quit
 
-	srv.Stop()
-
-	fmt.Println("Server stopped")
+	fmt.Println("Shutting down gRPC server...")
+	srv.ShutdownGracefully()
 }
