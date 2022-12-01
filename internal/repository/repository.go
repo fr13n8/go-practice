@@ -2,8 +2,8 @@ package repository
 
 import (
 	"github.com/fr13n8/go-practice/internal/domain"
-	"github.com/fr13n8/go-practice/internal/repository/task/redis"
-	"github.com/fr13n8/go-practice/internal/repository/task/sqlite"
+	sqlite_repo "github.com/fr13n8/go-practice/internal/repository/task/postgres"
+	redis_repo "github.com/fr13n8/go-practice/internal/repository/task/redis"
 	"github.com/go-redis/redis"
 	"gorm.io/gorm"
 )

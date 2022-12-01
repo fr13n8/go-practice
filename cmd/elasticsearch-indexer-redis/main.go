@@ -5,6 +5,7 @@ import (
 	"encoding/gob"
 	"log"
 
+	"github.com/fr13n8/go-practice/internal/config"
 	"github.com/fr13n8/go-practice/internal/domain"
 	"github.com/fr13n8/go-practice/pkg/redis"
 )
@@ -25,7 +26,8 @@ func run() {
 	// }
 	// defer res.Body.Close()
 	// log.Println(res)
-	rdb, err := redis.NewRedis()
+	cfg := config.NewConfig()
+	rdb, err := redis.NewRedis(&cfg.Redis)
 	if err != nil {
 		panic(err)
 	}

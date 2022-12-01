@@ -1,5 +1,128 @@
 version: '3.1'
 services:
+  redis:
+    image: redis:alpine
+    container_name: redis
+    restart: always
+    ports:
+      - 6379:6379
+    # volumes:
+    #   - ./redis:/data
+    networks:
+      - go-practice-net
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    restart: always
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - go-practice-net
+    
+  grafana:
+    image: grafana/grafana-enterprise
+    container_name: grafana
+    restart: always
+    ports:
+      - 3000:3000
+    # volumes:
+      # - ./grafana:/var/lib/grafana
+    networks:
+      - go-practice-net
+  
+  api-http:
+    build:
+      target: api-http
+      context: .
+      dockerfile: Dockerfile
+    container_name: api-http
+    restart: always
+    ports:
+      - 8080:80
+    # volumes:
+    #   - .:/go/src/go-practice
+    networks:
+      - go-practice-net
+    depends_on:
+      - postgres
+      - redis
+      - prometheus
+      - grafana
+    expose:
+      - 80
+    command: "/api/wait-for-it.sh postgres:5432 -- /api/http"
+    environment: 
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: go-practice
+
+  api-grpc:
+    build:
+      target: api-grpc
+      context: .
+      dockerfile: Dockerfile
+    container_name: api-grpc
+    restart: always
+    ports:
+      - 8081:8080
+    networks:
+      - go-practice-net
+    depends_on:
+      - postgres
+      - redis
+      - prometheus
+      - grafana
+    expose:
+      - 8080
+    command: "/api/wait-for-it.sh postgres:5432 -- /api/grpc"
+    environment: 
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: go-practice
+
+  redis-pubsub:
+    build:
+      target: redis-pubsub
+      context: .
+      dockerfile: Dockerfile
+    container_name: redis-pubsub
+    restart: always
+    networks:
+      - go-practice-net
+    depends_on:
+      - postgres
+      - redis
+      - prometheus
+      - grafana
+    command: "/app/redis-ce"
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    restart: always
+    ports:
+      - 5432:5432
+    # volumes:
+    #   - ./postgres:/var/lib/postgresql/data
+    networks:
+      - go-practice-net
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: go-practice
+    # healthcheck:
+    #   test: ["CMD-SHELL", "pg_isready -U postgres"]
+    #   interval: 5s
+    #   timeout: 5s
+    #   retries: 5
+
+networks:
+  # elastic:
+  go-practice-net:
+
   # kibana:
   #   build:
   #     context: kibana/
@@ -12,33 +135,33 @@ services:
   #   restart: always
   #   mem_limit: 1g
 
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.3.3
-    # build:
-      # context: elasticsearch/
-    container_name: elasticsearch
-    networks: ['elastic']
-    # volumes:
-      # - ./elasticsearch/elastic-data:/usr/share/elasticsearch/data
-      # - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
-      # - ./elasticsearch/logs:/var/logs/elasticsearch:ro
-    restart: always
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-      nofile:
-        soft: 65536
-        hard: 65536
-    environment:
-      - cluster.name=es-docker
-      - node.name=node1
-      - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
-      - http.host=0.0.0.0
-      - transport.host=127.0.0.1
-    mem_limit: 1g
-    tty: true
+  # elasticsearch:
+  #   image: docker.elastic.co/elasticsearch/elasticsearch:8.3.3
+  #   # build:
+  #     # context: elasticsearch/
+  #   container_name: elasticsearch
+  #   networks: ['elastic']
+  #   # volumes:
+  #     # - ./elasticsearch/elastic-data:/usr/share/elasticsearch/data
+  #     # - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+  #     # - ./elasticsearch/logs:/var/logs/elasticsearch:ro
+  #   restart: always
+  #   ulimits:
+  #     memlock:
+  #       soft: -1
+  #       hard: -1
+  #     nofile:
+  #       soft: 65536
+  #       hard: 65536
+  #   environment:
+  #     - cluster.name=es-docker
+  #     - node.name=node1
+  #     - bootstrap.memory_lock=true
+  #     - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+  #     - http.host=0.0.0.0
+  #     - transport.host=127.0.0.1
+  #   mem_limit: 1g
+  #   tty: true
 
   # logstash:
   #     build:
@@ -55,5 +178,3 @@ services:
   #     mem_limit: 1g
   #     environment:
   #       - "LS_JAVA_OPTS=-Xmx1g -Xms1g"
-
-networks: {elastic: {}}

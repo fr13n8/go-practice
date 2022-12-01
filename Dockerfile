@@ -1,15 +1,22 @@
-from golang:1.19 AS builder
+FROM golang:1.19 AS builder
 
 WORKDIR /src/
 COPY . .
-# go fmt $(go list ./... | grep -v /vendor/) &&\
-# go vet $(go list ./... | grep -v /vendor/) &&\
 RUN go mod tidy &&\
-    GOOS=linux GOARCH=amd64 CGO_ENABLED=1 go build -a -o bin/http cmd/api/http/main.go
+    GOOS=linux GOARCH=amd64 CGO_ENABLED=1 go build -a -o bin/http cmd/api/http/main.go &&\
+    GOOS=linux GOARCH=amd64 CGO_ENABLED=1 go build -a -o bin/grpc cmd/api/grpc/main.go &&\
+    GOOS=linux GOARCH=amd64 CGO_ENABLED=1 go build -a -o bin/redis-ce cmd/elasticsearch-indexer-redis/main.go
 
-FROM debian:buster-slim
+FROM debian:buster-slim as api-http
 WORKDIR /api/
-COPY --from=builder ["/src/bin/http", "/src/database.db", "/api/"]
+COPY --from=builder ["/src/bin/http", "/src/wait-for-it.sh", "/api/"]
+RUN chmod +x /api/wait-for-it.sh
 
-EXPOSE 80
-CMD ["./http"]
+FROM debian:buster-slim as api-grpc
+WORKDIR /api/
+COPY --from=builder ["/src/bin/grpc", "/src/wait-for-it.sh", "/api/"]
+RUN chmod +x /api/wait-for-it.sh
+
+FROM debian:buster-slim as redis-pubsub
+WORKDIR /app/
+COPY --from=builder ["/src/bin/redis-ce", "/app/"]

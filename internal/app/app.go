@@ -22,8 +22,8 @@ import (
 func RunHttp() {
 	cfg := config.NewConfig()
 	fmt.Println("Config:", cfg)
-	db := database.NewDb(cfg.Database)
-	cache, err := redis.NewRedis()
+	db := database.NewDb(&cfg.Database)
+	cache, err := redis.NewRedis(&cfg.Redis)
 	if err != nil {
 		fmt.Println("Error:", err)
 		os.Exit(1)
@@ -43,9 +43,8 @@ func RunHttp() {
 
 func RunGrpc() {
 	cfg := config.NewConfig()
-	fmt.Println("Config:", cfg)
-	db := database.NewDb(cfg.Database)
-	cache, err := redis.NewRedis()
+	db := database.NewDb(&cfg.Database)
+	cache, err := redis.NewRedis(&cfg.Redis)
 	if err != nil {
 		fmt.Println("Error:", err)
 		os.Exit(1)

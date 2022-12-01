@@ -3,4 +3,5 @@ scrape_configs:
   scrape_interval: 5s
   static_configs:
   - targets:
-    - go_practice_api:80
+    - api-http:80
+    - api-grpc:8081
