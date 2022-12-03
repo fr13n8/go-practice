@@ -23,7 +23,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/domain.TaskModel"
+                                "$ref": "#/definitions/domain.Task"
                             }
                         }
                     }
@@ -57,7 +57,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.TaskModel"
+                            "$ref": "#/definitions/domain.Task"
                         }
                     }
                 }
@@ -89,7 +89,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.TaskModel"
+                            "$ref": "#/definitions/domain.Task"
                         }
                     }
                 }
@@ -129,7 +129,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.TaskModel"
+                            "$ref": "#/definitions/domain.Task"
                         }
                     }
                 }
@@ -173,33 +173,24 @@
         }
     },
     "definitions": {
+        "domain.Task": {
+            "type": "object",
+            "properties": {
+                "ID": {
+                    "type": "string"
+                },
+                "Name": {
+                    "type": "string"
+                },
+                "Status": {
+                    "type": "boolean"
+                }
+            }
+        },
         "domain.TaskCreate": {
             "type": "object",
             "properties": {
                 "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "domain.TaskModel": {
-            "type": "object",
-            "properties": {
-                "createdAt": {
-                    "type": "string"
-                },
-                "deletedAt": {
-                    "$ref": "#/definitions/gorm.DeletedAt"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "boolean"
-                },
-                "updatedAt": {
                     "type": "string"
                 }
             }
@@ -209,18 +200,6 @@
             "properties": {
                 "name": {
                     "type": "string"
-                }
-            }
-        },
-        "gorm.DeletedAt": {
-            "type": "object",
-            "properties": {
-                "time": {
-                    "type": "string"
-                },
-                "valid": {
-                    "description": "Valid is true if Time is not NULL",
-                    "type": "boolean"
                 }
             }
         }

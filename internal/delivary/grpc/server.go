@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/fr13n8/go-practice/internal/config"
-	pb "github.com/fr13n8/go-practice/pkg/grpc/v1"
+	pb "github.com/fr13n8/go-practice/pkg/grpc/v1/gen"
 	grpcrecovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"

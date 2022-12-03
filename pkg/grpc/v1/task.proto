@@ -1,0 +1,126 @@
+syntax = "proto3";
+package v1.task;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+option go_package = "github.com/fr13n8/go-practice/pkg/grpc/v1/gen";
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+        version: "1.0";
+    };
+    external_docs: {
+        url: "https://github.com/fr13n8/go-pracitce";
+        description: "go-practice repository";
+    }
+    schemes: HTTP;
+};
+
+service TaskService {
+    rpc CreateTask (CreateTaskRequest) returns (CreateTaskResponse) {
+        option (google.api.http) = {
+            post: "/api/v1/task"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Create task"
+            description: "Create task on the server."
+            tags: "Task"
+        };
+    }
+    rpc UpdateTask (UpdateTaskRequest) returns (UpdateTaskResponse) {
+        option (google.api.http) = {
+            put: "/v1/api/task/{id}"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Update task by id"
+            description: "Update task by id on the server."
+            tags: "Task"
+        };
+    }
+    rpc DeleteTask (DeleteTaskRequest) returns (DeleteTaskResponse) {
+        option (google.api.http) = {
+            delete: "/v1/api/task/{id}"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Delete task by id"
+            description: "Delete task by id on the server."
+            tags: "Task"
+        };
+    }
+    rpc GetTask (GetTaskRequest) returns (GetTaskResponse) {
+        option (google.api.http) = {
+            get: "/v1/api/task/{id}"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get task by id"
+            description: "Get task by id on the server."
+            tags: "Task"
+        };
+    }
+    rpc ListTasks (ListTasksRequest) returns (ListTasksResponse) {
+        option (google.api.http) = {
+            get: "/v1/api/task/all"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "List tasks"
+            description: "List all tasks on the server."
+            tags: "Task"
+        };
+    }
+}
+
+message CreateTaskRequest {
+    string name = 1;
+}
+
+message CreateTaskResponse {
+    string id = 1;
+    string name = 2;
+    bool status = 3;
+}
+
+message UpdateTaskRequest {
+    string id = 1;
+    string name = 2;
+}
+
+message UpdateTaskResponse {
+    string id = 1;
+    string name = 2;
+    bool status = 3;
+}
+
+message DeleteTaskRequest {
+    string id = 1;
+}
+
+message DeleteTaskResponse {
+    string id = 1;
+}
+
+message GetTaskRequest {
+    string id = 1;
+}
+
+message GetTaskResponse {
+    string id = 1;
+    string name = 2;
+    bool status = 3;
+}
+
+message ListTasksRequest {
+    int64 limit = 1;
+    int64 offset = 2;
+}
+
+message ListTasksResponse {
+    repeated Task tasks = 1;
+}
+
+message Task {
+    string id = 1;
+    string name = 2;
+    bool status = 3;
+}

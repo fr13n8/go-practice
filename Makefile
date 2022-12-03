@@ -74,3 +74,18 @@ stop_local:
 remove_local:
 	echo "Removing docker environment"
 	docker compose -f docker-compose.local.yml down -v
+
+# ==============================================================================
+# Tools
+
+proto_update:
+	buf mod update ./pkg/grpc/v1
+
+proto_gen:
+	buf generate ./pkg/grpc/v1
+
+proto_lint:
+	buf lint ./pkg/grpc/v1
+
+swagger_init:
+	swag init -g ./cmd/api/http/main.go
