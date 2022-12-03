@@ -2,11 +2,14 @@ package redis_repo
 
 import (
 	"bytes"
+	"context"
 	"encoding/gob"
 	"fmt"
+	"time"
+
 	"github.com/fr13n8/go-practice/internal/domain"
 	"github.com/go-redis/redis"
-	"time"
+	"github.com/opentracing/opentracing-go"
 )
 
 const (
@@ -22,7 +25,10 @@ func NewTask(redis *redis.Client) *Repo {
 	return &Repo{redis, taskKey}
 }
 
-func (e *Repo) Set(task domain.Task, expire int) error {
+func (e *Repo) Set(ctx context.Context, task domain.Task, expire int) error {
+	span, _ := opentracing.StartSpanFromContext(ctx, "task.redis.Set")
+	defer span.Finish()
+
 	var b bytes.Buffer
 	if err := gob.NewEncoder(&b).Encode(task); err != nil {
 		return err
@@ -32,7 +38,10 @@ func (e *Repo) Set(task domain.Task, expire int) error {
 	return e.redis.Set(key, b.Bytes(), time.Second*time.Duration(expire)).Err()
 }
 
-func (e *Repo) Delete(id string) error {
+func (e *Repo) Delete(ctx context.Context, id string) error {
+	span, _ := opentracing.StartSpanFromContext(ctx, "task.redis.Delete")
+	defer span.Finish()
+
 	if err := e.redis.HDel(e.prefix, id).Err(); err != nil {
 		return err
 	}
@@ -40,7 +49,10 @@ func (e *Repo) Delete(id string) error {
 	return nil
 }
 
-func (e *Repo) Get(id string) (domain.Task, error) {
+func (e *Repo) Get(ctx context.Context, id string) (domain.Task, error) {
+	span, _ := opentracing.StartSpanFromContext(ctx, "task.redis.Get")
+	defer span.Finish()
+
 	var task domain.Task
 	key := e.createKey(id)
 	cmd := e.redis.Get(key)
@@ -55,7 +67,10 @@ func (e *Repo) Get(id string) (domain.Task, error) {
 	return task, nil
 }
 
-func (e *Repo) Created(task domain.Task) error {
+func (e *Repo) Created(ctx context.Context, task domain.Task) error {
+	span, _ := opentracing.StartSpanFromContext(ctx, "task.redis.PublishCreated")
+	defer span.Finish()
+
 	return e.publish(task, "created")
 }
 

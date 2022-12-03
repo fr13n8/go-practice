@@ -1,0 +1,33 @@
+http:
+  ServerName: Tasks service
+  Host: 0.0.0.0
+  Port: 8080
+  ReadTimeout: 5
+  WriteTimeout: 5
+  MaxRequestBodySize: 1048576
+
+grpc:
+  ServerName: Tasks service
+  Host: localhost
+  Port: 8081
+  MaxConnectionIdle: 5
+  MaxConnectionAge: 5
+  Timeout: 15
+
+redis:
+  Host: localhost
+  Port: 6379
+  Password:
+
+database:
+  Host: localhost
+  Port: 5432
+  Password: postgres
+  User: postgres
+  Name: postgres
+
+jaeger:
+  Host: localhost
+  Port: 6831
+  ServiceName: Tasks
+  LogSpans: false

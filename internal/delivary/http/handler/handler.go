@@ -2,11 +2,10 @@ package handler
 
 import (
 	v1 "github.com/fr13n8/go-practice/internal/delivary/http/handler/v1"
-	"github.com/fr13n8/go-practice/internal/delivary/http/middlewares"
+	"github.com/fr13n8/go-practice/internal/interceptors"
 	"github.com/fr13n8/go-practice/internal/services"
-	"github.com/gofiber/adaptor/v2"
+	metric "github.com/fr13n8/go-practice/pkg/metrics"
 	"github.com/gofiber/fiber/v2"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 type Handler struct {
@@ -36,17 +35,14 @@ func NewHandler(svcs *services.Services) *Handler {
 
 // @securityDefinitions.basic  BasicAuth
 func (h *Handler) Init(srv *fiber.App) {
-	api := srv.Group("/api", middlewares.RecrdRequestLatency)
+	metrics, err := metric.CreateMetrics(srv, "task_service_http")
+	if err != nil {
+		panic(err)
+	}
+	im := interceptors.NewInterceptorManager(metrics)
+
+	api := srv.Group("/api", im.Metrics)
 	handler := v1.NewHandler(h.services, &api)
 
-	// srv.Static("/", "static")
-	// srv.Get("*", func(c *fiber.Ctx) error {
-	// 	return c.SendFile("static/index.html")
-	// })
-	h.RegisterPromethesRoutes(srv)
 	handler.Init()
-}
-
-func (h *Handler) RegisterPromethesRoutes(srv *fiber.App) {
-	srv.Get("/metrics", adaptor.HTTPHandler(promhttp.Handler()))
 }

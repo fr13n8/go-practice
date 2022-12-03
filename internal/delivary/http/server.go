@@ -24,8 +24,8 @@ func NewServer(cfg *config.HttpConfig) *Server {
 		http: fiber.New(
 			fiber.Config{
 				AppName:      cfg.ServerName,
-				WriteTimeout: cfg.WriteTimeout,
-				ReadTimeout:  cfg.ReadTimeout,
+				WriteTimeout: cfg.WriteTimeout * time.Second,
+				ReadTimeout:  cfg.ReadTimeout * time.Second,
 				BodyLimit:    cfg.MaxRequestBodySize,
 			}),
 		host: cfg.Host,

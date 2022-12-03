@@ -1,4 +1,4 @@
 .idea
-database.db
+.code
 pkg/elastic/certs/http_ca.crt
-builds
+bin
