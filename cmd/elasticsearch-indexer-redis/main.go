@@ -3,11 +3,14 @@ package main
 import (
 	"bytes"
 	"encoding/gob"
+	"fmt"
 	"log"
+	"os"
 
 	"github.com/fr13n8/go-practice/internal/config"
 	"github.com/fr13n8/go-practice/internal/domain"
 	"github.com/fr13n8/go-practice/pkg/redis"
+	"github.com/fr13n8/go-practice/pkg/utils"
 )
 
 func main() {
@@ -26,7 +29,13 @@ func run() {
 	// }
 	// defer res.Body.Close()
 	// log.Println(res)
-	cfg := config.NewConfig()
+	configPath := utils.GetConfigPath(os.Getenv("config"))
+	cfg, err := config.NewConfig(configPath)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
 	rdb, err := redis.NewRedis(&cfg.Redis)
 	if err != nil {
 		panic(err)

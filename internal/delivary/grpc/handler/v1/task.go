@@ -2,10 +2,12 @@ package v1
 
 import (
 	"context"
+	"errors"
 
 	"github.com/fr13n8/go-practice/internal/domain"
 	"github.com/fr13n8/go-practice/internal/services"
 	pb "github.com/fr13n8/go-practice/pkg/grpc/v1"
+	"github.com/opentracing/opentracing-go"
 )
 
 type TaskHandler struct {
@@ -21,14 +23,16 @@ func NewTaskHandler(svc services.Task) *TaskHandler {
 }
 
 func (h *TaskHandler) CreateTask(ctx context.Context, req *pb.CreateTaskRequest) (*pb.CreateTaskResponse, error) {
+	span, jCtx := opentracing.StartSpanFromContext(ctx, "task.Create")
+	defer span.Finish()
 	reqBody := domain.TaskCreate{}
 	if req.GetName() == "" {
-		return nil, nil
+		return nil, errors.New("name is required")
 	}
 	reqBody.Name = req.GetName()
-	task, err := h.service.Create(reqBody)
+	task, err := h.service.Create(jCtx, reqBody)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("something went wrong")
 	}
 	return &pb.CreateTaskResponse{
 		Name:   task.Name,
@@ -38,10 +42,12 @@ func (h *TaskHandler) CreateTask(ctx context.Context, req *pb.CreateTaskRequest)
 }
 
 func (h *TaskHandler) GetTask(ctx context.Context, req *pb.GetTaskRequest) (*pb.GetTaskResponse, error) {
+	span, jCtx := opentracing.StartSpanFromContext(ctx, "task.Get")
+	defer span.Finish()
 	id := req.GetId()
-	task, err := h.service.Get(id)
+	task, err := h.service.Get(jCtx, id)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("something went wrong")
 	}
 
 	return &pb.GetTaskResponse{
@@ -52,21 +58,23 @@ func (h *TaskHandler) GetTask(ctx context.Context, req *pb.GetTaskRequest) (*pb.
 }
 
 func (h *TaskHandler) UpdateTask(ctx context.Context, req *pb.UpdateTaskRequest) (*pb.UpdateTaskResponse, error) {
+	span, jCtx := opentracing.StartSpanFromContext(ctx, "task.Update")
+	defer span.Finish()
 	id := req.GetId()
-	_, err := h.service.Get(id)
+	_, err := h.service.Get(jCtx, id)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("something went wrong")
 	}
 
 	reqBody := domain.TaskUpdate{}
 	if req.GetName() == "" {
-		return nil, nil
+		return nil, errors.New("name is required")
 	}
 	reqBody.Name = req.GetName()
 
-	task, err := h.service.Update(reqBody, id)
+	task, err := h.service.Update(jCtx, reqBody, id)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("something went wrong")
 	}
 
 	return &pb.UpdateTaskResponse{
@@ -77,15 +85,17 @@ func (h *TaskHandler) UpdateTask(ctx context.Context, req *pb.UpdateTaskRequest)
 }
 
 func (h *TaskHandler) DeleteTask(ctx context.Context, req *pb.DeleteTaskRequest) (*pb.DeleteTaskResponse, error) {
+	span, jCtx := opentracing.StartSpanFromContext(ctx, "task.Delete")
+	defer span.Finish()
 	id := req.GetId()
-	_, err := h.service.Get(id)
+	_, err := h.service.Get(jCtx, id)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("something went wrong")
 	}
 
-	err = h.service.Delete(id)
+	err = h.service.Delete(jCtx, id)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("something went wrong")
 	}
 	return &pb.DeleteTaskResponse{
 		Id: id,
@@ -93,9 +103,11 @@ func (h *TaskHandler) DeleteTask(ctx context.Context, req *pb.DeleteTaskRequest)
 }
 
 func (h *TaskHandler) ListTasks(ctx context.Context, req *pb.ListTasksRequest) (*pb.ListTasksResponse, error) {
-	tasks, err := h.service.GetAll()
+	span, jCtx := opentracing.StartSpanFromContext(ctx, "handler.ListTasks")
+	defer span.Finish()
+	tasks, err := h.service.GetAll(jCtx)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("something went wrong")
 	}
 
 	var tasksResponse []*pb.Task

@@ -1,17 +1,19 @@
 package services
 
 import (
+	"context"
+
 	"github.com/fr13n8/go-practice/internal/domain"
 	"github.com/fr13n8/go-practice/internal/repository"
 	"github.com/fr13n8/go-practice/internal/services/task"
 )
 
 type Task interface {
-	Create(task domain.TaskCreate) (domain.Task, error)
-	Delete(id string) error
-	Update(task domain.TaskUpdate, id string) (domain.Task, error)
-	Get(id string) (domain.Task, error)
-	GetAll() ([]domain.Task, error)
+	Create(ctx context.Context, task domain.TaskCreate) (domain.Task, error)
+	Delete(ctx context.Context, id string) error
+	Update(ctx context.Context, task domain.TaskUpdate, id string) (domain.Task, error)
+	Get(ctx context.Context, id string) (domain.Task, error)
+	GetAll(ctx context.Context) ([]domain.Task, error)
 }
 
 type Services struct {

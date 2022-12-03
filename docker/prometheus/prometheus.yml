@@ -1,0 +1,16 @@
+global:
+  scrape_interval:     5s
+  evaluation_interval: 5s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'tasks-microservice-http'
+    static_configs:
+      - targets: ['api-http:8080']
+  
+  - job_name: 'tasks-microservice-grpc'
+    static_configs:
+      - targets: ['api-grpc:7070']

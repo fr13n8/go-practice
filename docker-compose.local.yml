@@ -16,9 +16,11 @@ services:
     ports:
       - 9090:9090
     volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:Z
+      - ./docker/prometheus/prometheus.local.yml:/etc/prometheus/prometheus.yml:Z
     networks:
       - tasks-service-net
+    extra_hosts:
+        - "host.docker.internal:host-gateway"
     
   grafana:
     image: grafana/grafana-enterprise
@@ -28,70 +30,6 @@ services:
       - 3000:3000
     networks:
       - tasks-service-net
-  
-  api-http:
-    build:
-      target: api-http
-      context: .
-      dockerfile: Dockerfile
-    container_name: api-http
-    restart: always
-    ports:
-      - 8080:80
-    networks:
-      - tasks-service-net
-    depends_on:
-      - postgres
-      - redis
-      - prometheus
-      - grafana
-    expose:
-      - 80
-    command: "/api/wait-for-it.sh postgres:5432 -- /api/http"
-    environment: 
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: go-practice
-
-  api-grpc:
-    build:
-      target: api-grpc
-      context: .
-      dockerfile: Dockerfile
-    container_name: api-grpc
-    restart: always
-    ports:
-      - 8081:8080
-    networks:
-      - tasks-service-net
-    depends_on:
-      - postgres
-      - redis
-      - prometheus
-      - grafana
-    expose:
-      - 8080
-    command: "/api/wait-for-it.sh postgres:5432 -- /api/grpc"
-    environment: 
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: go-practice
-
-  redis-pubsub:
-    build:
-      target: redis-pubsub
-      context: .
-      dockerfile: Dockerfile
-    container_name: redis-pubsub
-    restart: always
-    networks:
-      - tasks-service-net
-    depends_on:
-      - postgres
-      - redis
-      - prometheus
-      - grafana
-    command: "/app/redis-ce"
 
   postgres:
     image: postgres:latest
@@ -100,13 +38,14 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - ./docker/pgdata:/var/lib/postgresql/data:Z
+      - ./docker/pgdata:/var/lib/postgresql/data/pgdata:z
     networks:
       - tasks-service-net
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: go-practice
+      PGDATA: /var/lib/pg_data
 
   jaeger:
     container_name: jaeger
