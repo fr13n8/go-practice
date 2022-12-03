@@ -3,11 +3,8 @@ package metric
 import (
 	"strconv"
 
-	"github.com/gofiber/adaptor/v2"
-	"github.com/gofiber/fiber/v2"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/collectors"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 type Metrics interface {
@@ -21,7 +18,7 @@ type PrometheusMetrics struct {
 	Times     *prometheus.HistogramVec
 }
 
-func CreateMetrics(app *fiber.App, name string) (Metrics, error) {
+func CreateMetrics(name string) (Metrics, error) {
 	var metr PrometheusMetrics
 	metr.HitsTotal = prometheus.NewCounter(prometheus.CounterOpts{
 		Name: name + "_hits_total",
@@ -50,8 +47,6 @@ func CreateMetrics(app *fiber.App, name string) (Metrics, error) {
 	if err := prometheus.Register(collectors.NewBuildInfoCollector()); err != nil {
 		return nil, err
 	}
-
-	app.Get("/metrics", adaptor.HTTPHandler(promhttp.Handler()))
 
 	return &metr, nil
 }
@@ -85,13 +80,6 @@ func CreateMetricsGrpc(name string) (Metrics, error) {
 	if err := prometheus.Register(collectors.NewBuildInfoCollector()); err != nil {
 		return nil, err
 	}
-	go func() {
-		router := fiber.New()
-		router.Get("/metrics", adaptor.HTTPHandler(promhttp.Handler()))
-		if err := router.Listen("0.0.0.0:7070"); err != nil {
-			panic(err)
-		}
-	}()
 
 	return &metr, nil
 }
