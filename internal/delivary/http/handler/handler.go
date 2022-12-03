@@ -5,7 +5,9 @@ import (
 	"github.com/fr13n8/go-practice/internal/interceptors"
 	"github.com/fr13n8/go-practice/internal/services"
 	metric "github.com/fr13n8/go-practice/pkg/metrics"
+	"github.com/gofiber/adaptor/v2"
 	"github.com/gofiber/fiber/v2"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 type Handler struct {
@@ -35,10 +37,11 @@ func NewHandler(svcs *services.Services) *Handler {
 
 // @securityDefinitions.basic  BasicAuth
 func (h *Handler) Init(srv *fiber.App) {
-	metrics, err := metric.CreateMetrics(srv, "task_service_http")
+	metrics, err := metric.CreateMetrics("task_service_http")
 	if err != nil {
 		panic(err)
 	}
+	srv.Get("/metrics", adaptor.HTTPHandler(promhttp.Handler()))
 	im := interceptors.NewInterceptorManager(metrics)
 
 	api := srv.Group("/api", im.Metrics)
