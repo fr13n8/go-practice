@@ -6,7 +6,7 @@ import (
 
 	"github.com/fr13n8/go-practice/internal/domain"
 	"github.com/fr13n8/go-practice/internal/services"
-	pb "github.com/fr13n8/go-practice/pkg/grpc/v1"
+	pb "github.com/fr13n8/go-practice/pkg/grpc/v1/gen"
 	"github.com/opentracing/opentracing-go"
 )
 

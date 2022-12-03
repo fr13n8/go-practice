@@ -35,7 +35,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/domain.TaskModel"
+                                "$ref": "#/definitions/domain.Task"
                             }
                         }
                     }
@@ -52,7 +52,7 @@ const docTemplate = `{
                 "tags": [
                     "tasks"
                 ],
-                "summary": "Set task",
+                "summary": "Create task",
                 "operationId": "create-task",
                 "parameters": [
                     {
@@ -69,7 +69,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.TaskModel"
+                            "$ref": "#/definitions/domain.Task"
                         }
                     }
                 }
@@ -91,7 +91,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "TaskDb ID",
+                        "description": "Task ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -101,7 +101,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.TaskModel"
+                            "$ref": "#/definitions/domain.Task"
                         }
                     }
                 }
@@ -131,7 +131,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "TaskDb id",
+                        "description": "Task id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -141,7 +141,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.TaskModel"
+                            "$ref": "#/definitions/domain.Task"
                         }
                     }
                 }
@@ -167,7 +167,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "TaskDb id",
+                        "description": "Task id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -185,33 +185,24 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "domain.Task": {
+            "type": "object",
+            "properties": {
+                "ID": {
+                    "type": "string"
+                },
+                "Name": {
+                    "type": "string"
+                },
+                "Status": {
+                    "type": "boolean"
+                }
+            }
+        },
         "domain.TaskCreate": {
             "type": "object",
             "properties": {
                 "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "domain.TaskModel": {
-            "type": "object",
-            "properties": {
-                "createdAt": {
-                    "type": "string"
-                },
-                "deletedAt": {
-                    "$ref": "#/definitions/gorm.DeletedAt"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "boolean"
-                },
-                "updatedAt": {
                     "type": "string"
                 }
             }
@@ -221,18 +212,6 @@ const docTemplate = `{
             "properties": {
                 "name": {
                     "type": "string"
-                }
-            }
-        },
-        "gorm.DeletedAt": {
-            "type": "object",
-            "properties": {
-                "time": {
-                    "type": "string"
-                },
-                "valid": {
-                    "description": "Valid is true if Time is not NULL",
-                    "type": "boolean"
                 }
             }
         }

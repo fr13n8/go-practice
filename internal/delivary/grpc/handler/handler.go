@@ -6,7 +6,7 @@ import (
 	v1 "github.com/fr13n8/go-practice/internal/delivary/grpc/handler/v1"
 	"github.com/fr13n8/go-practice/internal/interceptors"
 	"github.com/fr13n8/go-practice/internal/services"
-	pb "github.com/fr13n8/go-practice/pkg/grpc/v1"
+	pb "github.com/fr13n8/go-practice/pkg/grpc/v1/gen"
 	metric "github.com/fr13n8/go-practice/pkg/metrics"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
