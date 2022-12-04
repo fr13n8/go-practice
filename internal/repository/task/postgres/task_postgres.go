@@ -85,7 +85,7 @@ func (e *Repo) Get(ctx context.Context, id string) (domain.Task, error) {
 	defer span.Finish()
 
 	var task domain.Task
-	if err := e.db.Table("tasks").Where("i = ?", id).First(&task).Error; err != nil {
+	if err := e.db.Table("tasks").Where("id = ?", id).First(&task).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return domain.Task{}, gorm.ErrRecordNotFound
 		}
