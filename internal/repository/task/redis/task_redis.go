@@ -10,6 +10,7 @@ import (
 	"github.com/fr13n8/go-practice/internal/domain"
 	"github.com/go-redis/redis"
 	"github.com/opentracing/opentracing-go"
+	"github.com/opentracing/opentracing-go/ext"
 )
 
 const (
@@ -70,8 +71,34 @@ func (e *Repo) Get(ctx context.Context, id string) (domain.Task, error) {
 func (e *Repo) Created(ctx context.Context, task domain.Task) error {
 	span, _ := opentracing.StartSpanFromContext(ctx, "task.redis.PublishCreated")
 	defer span.Finish()
+	if err := e.publish(task, "created"); err != nil {
+		ext.LogError(span, err)
+		return err
+	}
 
-	return e.publish(task, "created")
+	return nil
+}
+
+func (e *Repo) Updated(ctx context.Context, task domain.Task) error {
+	span, _ := opentracing.StartSpanFromContext(ctx, "task.redis.PublishUpdated")
+	defer span.Finish()
+	if err := e.publish(task, "updated"); err != nil {
+		ext.LogError(span, err)
+		return err
+	}
+
+	return nil
+}
+
+func (e *Repo) Deleted(ctx context.Context, task domain.Task) error {
+	span, _ := opentracing.StartSpanFromContext(ctx, "task.redis.PublishDeleted")
+	defer span.Finish()
+	if err := e.publish(task, "deleted"); err != nil {
+		ext.LogError(span, err)
+		return err
+	}
+
+	return nil
 }
 
 func (e *Repo) publish(task domain.Task, event string) error {

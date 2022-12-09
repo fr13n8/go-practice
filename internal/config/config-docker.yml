@@ -31,3 +31,9 @@ jaeger:
   Port: 6831
   ServiceName: Tasks_GRPC
   LogSpans: false
+
+elastic:
+  Host: elasticsearch
+  Port: 9200
+  User: elastic
+  Password: 

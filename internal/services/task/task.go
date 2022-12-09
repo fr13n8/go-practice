@@ -44,6 +44,16 @@ func (s *Task) Delete(ctx context.Context, id string) error {
 	span, jCtx := opentracing.StartSpanFromContext(ctx, "task.service.Delete")
 	defer span.Finish()
 
+	task, err := s.Get(jCtx, id)
+	if err != nil {
+		return err
+	}
+
+	err = s.repo.TaskRds.Deleted(jCtx, task)
+	if err != nil {
+		return err
+	}
+
 	return s.repo.TaskDb.Delete(jCtx, id)
 }
 
@@ -51,11 +61,20 @@ func (s *Task) Update(ctx context.Context, task domain.TaskUpdate, id string) (d
 	span, jCtx := opentracing.StartSpanFromContext(ctx, "task.service.Update")
 	defer span.Finish()
 
+	_, err := s.Get(jCtx, id)
+	if err != nil {
+		return domain.Task{}, err
+	}
+
 	updTask := domain.Task{
 		Name: task.Name,
 		ID:   id,
 	}
 	newTask, err := s.repo.TaskDb.Update(jCtx, updTask)
+	if err != nil {
+		return domain.Task{}, err
+	}
+	err = s.repo.TaskRds.Updated(jCtx, newTask)
 	if err != nil {
 		return domain.Task{}, err
 	}

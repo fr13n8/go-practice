@@ -24,10 +24,16 @@ database:
   Port: 5432
   Password: postgres
   User: postgres
-  Name: postgres
+  Name: tasks
 
 jaeger:
   Host: localhost
   Port: 6831
   ServiceName: Tasks
   LogSpans: false
+
+elastic:
+  Host: localhost
+  Port: 9200
+  User: elastic
+  Password: 
