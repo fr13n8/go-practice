@@ -119,18 +119,6 @@ func (h *Handler) Update(ctx *fiber.Ctx) error {
 	defer span.Finish()
 
 	id := ctx.Params("id")
-	_, err := h.services.Task.Get(jCtx, id)
-	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			return ctx.Status(404).JSON(err)
-		}
-		return ctx.Status(400).JSON(
-			fiber.Map{
-				"error": "Something went wrong",
-			},
-		)
-	}
-
 	reqBody := domain.TaskUpdate{}
 	if err := ctx.BodyParser(&reqBody); err != nil {
 		return ctx.Status(400).JSON(
@@ -142,6 +130,9 @@ func (h *Handler) Update(ctx *fiber.Ctx) error {
 
 	task, err := h.services.Task.Update(jCtx, reqBody, id)
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return ctx.Status(404).JSON(err)
+		}
 		return ctx.Status(400).JSON(
 			fiber.Map{
 				"error": "Something went wrong",
@@ -166,20 +157,11 @@ func (h *Handler) Delete(ctx *fiber.Ctx) error {
 	defer span.Finish()
 
 	id := ctx.Params("id")
-	_, err := h.services.Task.Get(jCtx, id)
+	err := h.services.Task.Delete(jCtx, id)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return ctx.Status(404).JSON(err)
 		}
-		return ctx.Status(400).JSON(
-			fiber.Map{
-				"error": "Something went wrong",
-			},
-		)
-	}
-
-	err = h.services.Task.Delete(jCtx, id)
-	if err != nil {
 		return ctx.Status(400).JSON(
 			fiber.Map{
 				"error": "Something went wrong",

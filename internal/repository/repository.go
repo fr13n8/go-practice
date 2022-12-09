@@ -23,6 +23,8 @@ type TaskRds interface {
 	Delete(ctx context.Context, id string) error
 	Get(ctx context.Context, id string) (domain.Task, error)
 	Created(ctx context.Context, task domain.Task) error
+	Updated(ctx context.Context, task domain.Task) error
+	Deleted(ctx context.Context, task domain.Task) error
 }
 
 type Repository struct {

@@ -9,12 +9,12 @@ import (
 )
 
 type Config struct {
-	HTTP          HttpConfig
-	GRPC          GrpcConfig
-	ElasticConfig ElasticConfig
-	Database      DatabaseConfig
-	Redis         RedisConfig
-	Jaeger        JaegerConfig
+	HTTP     HttpConfig
+	GRPC     GrpcConfig
+	Elastic  ElasticConfig
+	Database DatabaseConfig
+	Redis    RedisConfig
+	Jaeger   JaegerConfig
 }
 
 type HttpConfig struct {
@@ -74,39 +74,6 @@ func NewConfig(configPath string) (*Config, error) {
 		return nil, err
 	}
 	return cfg, nil
-	// return &Config{
-	// 	HTTP: HttpConfig{
-	// 		ServerName:         "Http Server",
-	// 		Host:               "0.0.0.0",
-	// 		Port:               "80",
-	// 		ReadTimeout:        time.Second * 5,
-	// 		WriteTimeout:       time.Second * 5,
-	// 		MaxRequestBodySize: 1048576,
-	// 	},
-	// 	GRPC: GrpcConfig{
-	// 		ServerName: "Grpc Server",
-	// 		Host:       "0.0.0.0",
-	// 		Port:       "8080",
-	// 	},
-	// 	ElasticConfig: ElasticConfig{
-	// 		Host:     "localhost",
-	// 		Port:     "9200",
-	// 		User:     "elastic",
-	// 		Password: "gvETj_R1HXb8hp0blG39",
-	// 	},
-	// 	Database: DatabaseConfig{
-	// 		Host:     "postgres",
-	// 		Port:     "5432",
-	// 		User:     "postgres",
-	// 		Password: "postgres",
-	// 		Name:     "go-practice",
-	// 	},
-	// 	Redis: RedisConfig{
-	// 		Host:     "redis",
-	// 		Port:     "6379",
-	// 		Password: "",
-	// 	},
-	// }
 }
 
 // Load config file from given path
