@@ -22,6 +22,10 @@ import (
 	"github.com/fr13n8/go-practice/pkg/database"
 )
 
+var (
+	errorLevelLog = "Error:"
+)
+
 func RunHttp() {
 	configPath := utils.GetConfigPath(os.Getenv("config"))
 	cfg, err := config.NewConfig(configPath)
@@ -33,7 +37,7 @@ func RunHttp() {
 	db := database.NewDb(&cfg.Database)
 	cache, err := redis.NewRedis(&cfg.Redis)
 	if err != nil {
-		fmt.Println("Error:", err)
+		fmt.Println(errorLevelLog, err)
 		os.Exit(1)
 	}
 	repo := repository.NewRepository(db, cache)
@@ -43,7 +47,7 @@ func RunHttp() {
 
 	tracer, closer, err := jaegerTracer.InitJaeger(&cfg.Jaeger, "http")
 	if err != nil {
-		fmt.Println("Error:", err)
+		fmt.Println(errorLevelLog, err)
 		return
 	}
 	fmt.Println("Jaeger tracer started")
@@ -63,14 +67,14 @@ func RunGrpc() {
 	configPath := utils.GetConfigPath(os.Getenv("config"))
 	cfg, err := config.NewConfig(configPath)
 	if err != nil {
-		fmt.Println("Error:", err)
+		fmt.Println(errorLevelLog, err)
 		return
 	}
 
 	db := database.NewDb(&cfg.Database)
 	cache, err := redis.NewRedis(&cfg.Redis)
 	if err != nil {
-		fmt.Println("Error:", err)
+		fmt.Println(errorLevelLog, err)
 		return
 	}
 	repo := repository.NewRepository(db, cache)
@@ -80,7 +84,7 @@ func RunGrpc() {
 
 	tracer, closer, err := jaegerTracer.InitJaeger(&cfg.Jaeger, "grpc")
 	if err != nil {
-		fmt.Println("Error:", err)
+		fmt.Println(errorLevelLog, err)
 		return
 	}
 	fmt.Println("Jaeger tracer started")
