@@ -37,7 +37,7 @@ func NewHandler(svcs *services.Services) *Handler {
 
 // @securityDefinitions.basic  BasicAuth
 func (h *Handler) Init(srv *fiber.App) {
-	metrics, err := metric.CreateMetrics("task_service_http")
+	metrics, err := metric.Http("task_service_http")
 	if err != nil {
 		panic(err)
 	}

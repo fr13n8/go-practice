@@ -10,6 +10,10 @@ import (
 	"github.com/opentracing/opentracing-go"
 )
 
+var (
+	badReqMsg = "Something went wrong"
+)
+
 type TaskHandler struct {
 	pb.UnimplementedTaskServiceServer
 
@@ -32,7 +36,7 @@ func (h *TaskHandler) CreateTask(ctx context.Context, req *pb.CreateTaskRequest)
 	reqBody.Name = req.GetName()
 	task, err := h.service.Create(jCtx, reqBody)
 	if err != nil {
-		return nil, errors.New("something went wrong")
+		return nil, errors.New(badReqMsg)
 	}
 	return &pb.CreateTaskResponse{
 		Name:   task.Name,
@@ -47,7 +51,7 @@ func (h *TaskHandler) GetTask(ctx context.Context, req *pb.GetTaskRequest) (*pb.
 	id := req.GetId()
 	task, err := h.service.Get(jCtx, id)
 	if err != nil {
-		return nil, errors.New("something went wrong")
+		return nil, errors.New(badReqMsg)
 	}
 
 	return &pb.GetTaskResponse{
@@ -63,7 +67,7 @@ func (h *TaskHandler) UpdateTask(ctx context.Context, req *pb.UpdateTaskRequest)
 	id := req.GetId()
 	_, err := h.service.Get(jCtx, id)
 	if err != nil {
-		return nil, errors.New("something went wrong")
+		return nil, errors.New(badReqMsg)
 	}
 
 	reqBody := domain.TaskUpdate{}
@@ -74,7 +78,7 @@ func (h *TaskHandler) UpdateTask(ctx context.Context, req *pb.UpdateTaskRequest)
 
 	task, err := h.service.Update(jCtx, reqBody, id)
 	if err != nil {
-		return nil, errors.New("something went wrong")
+		return nil, errors.New(badReqMsg)
 	}
 
 	return &pb.UpdateTaskResponse{
@@ -90,12 +94,12 @@ func (h *TaskHandler) DeleteTask(ctx context.Context, req *pb.DeleteTaskRequest)
 	id := req.GetId()
 	_, err := h.service.Get(jCtx, id)
 	if err != nil {
-		return nil, errors.New("something went wrong")
+		return nil, errors.New(badReqMsg)
 	}
 
 	err = h.service.Delete(jCtx, id)
 	if err != nil {
-		return nil, errors.New("something went wrong")
+		return nil, errors.New(badReqMsg)
 	}
 	return &pb.DeleteTaskResponse{
 		Id: id,
@@ -107,7 +111,7 @@ func (h *TaskHandler) ListTasks(ctx context.Context, req *pb.ListTasksRequest) (
 	defer span.Finish()
 	tasks, err := h.service.GetAll(jCtx)
 	if err != nil {
-		return nil, errors.New("something went wrong")
+		return nil, errors.New(badReqMsg)
 	}
 
 	var tasksResponse []*pb.Task

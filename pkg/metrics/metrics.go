@@ -18,7 +18,7 @@ type PrometheusMetrics struct {
 	Times     *prometheus.HistogramVec
 }
 
-func CreateMetrics(name string) (Metrics, error) {
+func Http(name string) (Metrics, error) {
 	var metr PrometheusMetrics
 	metr.HitsTotal = prometheus.NewCounter(prometheus.CounterOpts{
 		Name: name + "_hits_total",
@@ -51,7 +51,7 @@ func CreateMetrics(name string) (Metrics, error) {
 	return &metr, nil
 }
 
-func CreateMetricsGrpc(name string) (Metrics, error) {
+func Grpc(name string) (Metrics, error) {
 	var metr PrometheusMetrics
 	metr.HitsTotal = prometheus.NewCounter(prometheus.CounterOpts{
 		Name: name + "_hits_total",

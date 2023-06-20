@@ -7,6 +7,10 @@ import (
 	"gorm.io/gorm"
 )
 
+var (
+	badReqMsg = "Something went wrong"
+)
+
 func (h *Handler) InitTaskRoutes(router fiber.Router) *fiber.Router {
 	routes := router.Group("/task")
 	routes.Get("/all", h.GetAll)
@@ -39,7 +43,7 @@ func (h *Handler) Get(ctx *fiber.Ctx) error {
 		}
 		return ctx.Status(400).JSON(
 			fiber.Map{
-				"error": "Something went wrong",
+				"error": badReqMsg,
 			},
 		)
 	}
@@ -63,7 +67,7 @@ func (h *Handler) GetAll(ctx *fiber.Ctx) error {
 	if err != nil {
 		return ctx.Status(400).JSON(
 			fiber.Map{
-				"error": "Something went wrong",
+				"error": badReqMsg,
 			},
 		)
 	}
@@ -88,7 +92,7 @@ func (h *Handler) Create(ctx *fiber.Ctx) error {
 	if err := ctx.BodyParser(&reqBody); err != nil {
 		return ctx.Status(400).JSON(
 			fiber.Map{
-				"error": "Something went wrong",
+				"error": badReqMsg,
 			},
 		)
 	}
@@ -97,7 +101,7 @@ func (h *Handler) Create(ctx *fiber.Ctx) error {
 	if err != nil {
 		return ctx.Status(400).JSON(
 			fiber.Map{
-				"error": "Something went wrong",
+				"error": badReqMsg,
 			},
 		)
 	}
@@ -123,7 +127,7 @@ func (h *Handler) Update(ctx *fiber.Ctx) error {
 	if err := ctx.BodyParser(&reqBody); err != nil {
 		return ctx.Status(400).JSON(
 			fiber.Map{
-				"error": "Something went wrong",
+				"error": badReqMsg,
 			},
 		)
 	}
@@ -135,7 +139,7 @@ func (h *Handler) Update(ctx *fiber.Ctx) error {
 		}
 		return ctx.Status(400).JSON(
 			fiber.Map{
-				"error": "Something went wrong",
+				"error": badReqMsg,
 			},
 		)
 	}
@@ -164,7 +168,7 @@ func (h *Handler) Delete(ctx *fiber.Ctx) error {
 		}
 		return ctx.Status(400).JSON(
 			fiber.Map{
-				"error": "Something went wrong",
+				"error": badReqMsg,
 			},
 		)
 	}
