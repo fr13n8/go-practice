@@ -31,7 +31,7 @@ func NewHandler(svcs *services.Services) *Handler {
 }
 
 func (h *Handler) Init(srv *grpc.Server) {
-	metrics, err := metric.Grpc("task_service_grpc")
+	metrics, err := metric.New("task_service_grpc")
 	if err != nil {
 		panic(err)
 	}
