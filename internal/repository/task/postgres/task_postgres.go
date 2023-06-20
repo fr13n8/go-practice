@@ -10,6 +10,10 @@ import (
 	"gorm.io/gorm"
 )
 
+var (
+	filterId = "id = ?"
+)
+
 type Repo struct {
 	db *gorm.DB
 }
@@ -40,7 +44,7 @@ func (e *Repo) Delete(ctx context.Context, id string) error {
 	defer span.Finish()
 
 	var task domain.Task
-	if err := e.db.Table("tasks").Where("id = ?", id).First(&task).Error; err != nil {
+	if err := e.db.Table("tasks").Where(filterId, id).First(&task).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return gorm.ErrRecordNotFound
 		}
@@ -61,7 +65,7 @@ func (e *Repo) Update(ctx context.Context, task domain.Task) (domain.Task, error
 	defer span.Finish()
 
 	var newTask domain.Task
-	if err := e.db.Table("tasks").Where("id = ?", task.ID).First(&task).Error; err != nil {
+	if err := e.db.Table("tasks").Where(filterId, task.ID).First(&task).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return domain.Task{}, gorm.ErrRecordNotFound
 		}
@@ -85,7 +89,7 @@ func (e *Repo) Get(ctx context.Context, id string) (domain.Task, error) {
 	defer span.Finish()
 
 	var task domain.Task
-	if err := e.db.Table("tasks").Where("id = ?", id).First(&task).Error; err != nil {
+	if err := e.db.Table("tasks").Where(filterId, id).First(&task).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return domain.Task{}, gorm.ErrRecordNotFound
 		}
